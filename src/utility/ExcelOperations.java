@@ -18,7 +18,7 @@ public class ExcelOperations {
 		File file = new File(inputFile);
 		FileInputStream inputStream = new FileInputStream(file);
 		Workbook wb = new XSSFWorkbook(inputStream);
-						
+
 		Sheet sheet = wb.getSheet(sheetName);
 		int totalRows = sheet.getLastRowNum();
 		int totalCols = sheet.getRow(0).getLastCellNum();
