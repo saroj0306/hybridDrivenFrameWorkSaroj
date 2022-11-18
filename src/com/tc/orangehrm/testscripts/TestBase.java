@@ -2,6 +2,7 @@ package com.tc.orangehrm.testscripts;
 
 import java.io.IOException;
 
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -22,7 +23,13 @@ public class TestBase {
 	}
 
 	@AfterMethod
-	public void tearDown() {
+	public void tearDown(ITestResult result) {
+		int status = result.getStatus();
+		if (ITestResult.FAILURE == status) {
+			PredefinedActions.takeScreenshot(result.getMethod().getMethodName());
+		} else if (ITestResult.SUCCESS == status) {
+			PredefinedActions.takeScreenshot(result.getMethod().getMethodName());
+		}
 		PredefinedActions.closeBrowser();
 	}
 }

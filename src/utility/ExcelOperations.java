@@ -39,10 +39,9 @@ public class ExcelOperations {
 					} else
 						data[rowIndex][colIndex] = cell.getNumericCellValue();
 				}
-				wb.close();
 			}
 		}
-
+		wb.close();
 		return data;
 	}
 }

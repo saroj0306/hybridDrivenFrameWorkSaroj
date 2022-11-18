@@ -1,17 +1,22 @@
 package base;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.OutputType;
 
 import customexceptions.ElementNotEnabledException;
 
@@ -33,6 +38,17 @@ public class PredefinedActions {
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		wait = new WebDriverWait(driver, 60);
 		actions = new Actions(driver);
+	}
+
+	public static WebDriver startTemp(String url) {
+		System.setProperty("webdriver.chrome.driver", "drivers/chromedriver_106.exe");
+		driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.get(url);
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		wait = new WebDriverWait(driver, 60);
+		actions = new Actions(driver);
+		return driver;
 	}
 
 	protected WebElement getElement(String locatorType, String locatorValue, boolean isWaitRequired) {
@@ -155,6 +171,16 @@ public class PredefinedActions {
 		return listOfElementText;
 	}
 
+	protected String getElementText(WebElement e, boolean isWaitRequired) {
+		if (isWaitRequired)
+			waitForVisibilityOfElement(e);
+		String value = e.getText();
+		if (value.equals("")) {
+			value = e.getAttribute("value");
+		}
+		return value;
+	}
+
 	public String getPageTitle() {
 		return driver.getTitle();
 	}
@@ -165,6 +191,31 @@ public class PredefinedActions {
 
 	public static void closeBrowser() {
 		driver.close();
+	}
+
+	public static void takeScreenshot(String testCaseName) {
+		TakesScreenshot ts = (TakesScreenshot) driver;
+		File srcFile = ts.getScreenshotAs(OutputType.FILE);
+		try {
+			FileUtils.copyFile(srcFile, new File("./failedTestCases/" + testCaseName + ".jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void clickUingJS(WebElement ele) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click()", ele);
+	}
+
+	protected void sendKeyUsingJS(WebElement ele, String text) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].value='" + text + "'", ele);
+	}
+
+	protected void markCheckbox(WebElement ele, boolean checkedOrUnchecked) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].checked=" + checkedOrUnchecked + "", ele);
 	}
 
 }
